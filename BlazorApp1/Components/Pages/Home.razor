@@ -1,0 +1,77 @@
+﻿@page "/"
+@using BlazorApp1.DB.Repository
+@using BlazorApp1.Models
+
+<PageTitle>Home</PageTitle>
+
+<button @onclick='() => Console.WriteLine("Hello")'>Click me</button>
+
+<h3>People</h3>
+<div class="container">
+	<div class="row">
+		<div class="col-12">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Id</th>
+						<th>Name</th>
+						<th>Age</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var person in _persons)
+					{
+						<tr>
+							<td>@person.Id</td>
+							<td>@person.Name</td>
+							<td>@person.Age</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<h3>Add Person</h3>
+<div class="container">
+	<div class="row">
+		<div class="col-12">
+			<div class="form-group">
+				<label for="name">Name</label>
+				<input type="text" class="form-control" id="name" @bind="this._personToAdd.Name" />
+			</div>
+			<div class="form-group">
+				<label for="age">Age</label>
+				<input type="number" class="form-control" id="age" @bind="this._personToAdd.Age" />
+			</div>
+			<button class="btn btn-primary" @onclick="AddPerson">Add</button>
+			<button class="btn btn-primary" @onclick='() => Console.WriteLine("Print")'>Print</button>
+		</div>
+	</div>
+</div>
+
+@code {
+
+	[Inject] private PersonRepository _repo { get; set; } = default!;
+
+	private List<Person> _persons = new List<Person>();
+	private int _skip = 0;
+	private int _take = 10;
+
+	private Person _personToAdd = new();
+
+	protected override void OnInitialized()
+	{
+		_persons = _repo.GetPeople(_skip, _take);
+	}
+
+	private void AddPerson(MouseEventArgs args)
+	{
+		Console.WriteLine($"Adding person: {_personToAdd.Name} {_personToAdd.Age}");
+		_repo.AddPerson(_personToAdd);
+		_personToAdd = new();
+		_persons = _repo.GetPeople(_skip, _take);
+		Console.WriteLine("Person added");
+	}
+}
