@@ -24,5 +24,10 @@
 		{
 			return _context.People.Where(p => p.Name.StartsWith(begin)).ToList();
 		}
+
+		public int GetPeopleCount()
+		{
+			return _context.People.Count();
+		}
 	}
 }
